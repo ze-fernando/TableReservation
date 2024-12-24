@@ -1,7 +1,5 @@
-using DotNetEnv;
 using Infra.Config;
 
-Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
