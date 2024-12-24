@@ -1,4 +1,4 @@
-namespace src.api.Dtos
+namespace Dtos
 {
     public record UserDto(
             string Name,

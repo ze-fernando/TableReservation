@@ -1,10 +1,14 @@
-using src.api.Models.Enum;
+using Enums;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
-namespace src.api.Models
+namespace Models
 {
     public class User
     {
-        public required int Id { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public required string Id { get; set; }
         public required string Name { get; set; }
         public required string Nickname { get; set; }
         public required string Tel { get; set; }

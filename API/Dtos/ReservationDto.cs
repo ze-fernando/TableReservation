@@ -1,4 +1,4 @@
-namespace src.api.Dtos
+namespace Dtos
 {
     public record ReservationDto(
             int NumberOfPeople,

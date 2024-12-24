@@ -1,4 +1,4 @@
-namespace src.api.Models.Enum
+namespace Enums
 {
     public enum Roles
     {
