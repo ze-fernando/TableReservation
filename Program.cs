@@ -1,6 +1,9 @@
-using Infra.Config;
-using Services;
-using System.Text.Json.Serialization;
+using API.Infra.Config;
+using API.Services;
+using DotNetEnv;
+
+
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +13,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.Configure<MongoConfig>(
         builder.Configuration.GetSection("ReservationDatabase"));
 
-builder.Services.AddSingleton<ReservationServices>();
+builder.Services.AddSingleton<ReservationService>();
+builder.Services.AddSingleton<EmailService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
