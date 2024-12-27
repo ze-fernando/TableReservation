@@ -1,17 +1,18 @@
-using Dtos;
-using Models;
-using Infra.Config;
+using API.Dtos;
+using API.Models;
+using API.Infra.Config;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace Services;
+namespace API.Services;
 
-public class ReservationServices
+public class ReservationService
 {
     private readonly IMongoCollection<Reservation> _collection;
+    private readonly EmailService _service;
 
-    public ReservationServices(
-          IOptions<MongoConfig> DatabaseSettings)
+    public ReservationService(
+          IOptions<MongoConfig> DatabaseSettings, EmailService service)
     {
         var mongoClient = new MongoClient(
             DatabaseSettings.Value.ConnectionString);
@@ -21,6 +22,8 @@ public class ReservationServices
 
         _collection = mongoDatabase.GetCollection<Reservation>(
            DatabaseSettings.Value.Collection);
+
+        _service = service;
     }
 
     public async Task<List<Reservation>> FindAll() =>
@@ -60,4 +63,17 @@ public class ReservationServices
     public async Task Delete(string id) =>
         await _collection.DeleteOneAsync(x => x.Id == id);
 
+
+    public async Task<bool> ConfirmResv(string id)
+    {
+        var resv = await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
+
+        if (resv == null)
+            return false;
+
+        var update = Builders<Reservation>.Update.Set(x => x.IsConfirmed, true);
+        var result = await _collection.UpdateOneAsync(x => x.Id == id, update);
+
+        return result.ModifiedCount > 0;
+    }
 }
