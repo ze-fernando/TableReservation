@@ -1,4 +1,4 @@
-namespace Infra.Config;
+namespace API.Infra.Config;
 
 public class MongoConfig
 {
