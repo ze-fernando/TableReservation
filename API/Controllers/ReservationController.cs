@@ -1,46 +1,58 @@
 using Microsoft.AspNetCore.Mvc;
+using Services;
 using Dtos;
+using Models;
 
 namespace Controllers;
 
-public class ReservationController : ControllerBase
+[ApiController]
+[Route("api")]
+public class ReservationController(ReservationServices service) : ControllerBase
 {
+
+    private readonly ReservationServices _service = service;
+
+    [HttpGet]
     public IActionResult GetAll()
     {
-        ICollection<Reservation> reservations = _service.FindAll();
+        Task<List<Reservation>> reservations = _service.FindAll();
 
         return Ok(new { data = reservations });
     }
 
-    public IActionResult GetById(int id)
+    [HttpGet("{id}")]
+    public IActionResult GetById([FromRoute] string id)
     {
-        Reservation reservation = _service.FindById(id);
+        Task<Reservation?> reservation = _service.FindById(id);
 
         return Ok(new { data = reservation });
     }
 
-    public IActionResult NewReservation(ReservationDto dto)
+    [HttpPost]
+    public IActionResult NewReservation([FromBody] ReservationDto dto)
     {
-        Reservation newReservation = _service.Create(dto);
+        Task<Reservation> newReservation = _service.Create(dto);
 
-        return Created(new { reservation = newReservation });
+        return Created("", new { reservation = newReservation });
     }
 
-    public IActionResult UpdateReservation(ReservationDto dto, int id)
+    [HttpPut("{id}")]
+    public IActionResult UpdateReservation([FromBody] ReservationDto dto, [FromRoute] string id)
     {
-        Reservation updatedReservation = _service.Update(id, dto);
+        Task<Reservation> updatedReservation = _service.Update(id, dto);
 
-        return Created(new { reservation = updatedReservation });
+        return Ok(new { reservation = updatedReservation });
     }
 
-    public IActionResult DeleteReservation(int id)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteReservation([FromRoute] string id)
     {
-        _service.Delete(id);
+        await _service.Delete(id);
 
-        return Deleted();
+        return Ok();
     }
 
-    public IActionResult ConfirmReservation(int id)
+    public IActionResult ConfirmReservation(string id)
     {
         //TODO
         return Ok("Confirm");

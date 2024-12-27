@@ -1,5 +1,6 @@
 using Infra.Config;
-
+using Services;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,12 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<MongoConfig>(
         builder.Configuration.GetSection("ReservationDatabase"));
+
+builder.Services.AddSingleton<ReservationServices>();
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+            options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
 var app = builder.Build();
 
@@ -18,6 +25,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapControllers();
 app.UseHttpsRedirection();
 app.Run();
 
