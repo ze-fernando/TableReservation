@@ -1,16 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
-using Services;
-using Dtos;
-using Models;
+using API.Services;
+using API.Dtos;
+using API.Models;
 
-namespace Controllers;
+namespace API.Controllers;
 
 [ApiController]
 [Route("api")]
-public class ReservationController(ReservationServices service) : ControllerBase
+public class ReservationController(ReservationService service, EmailService mailService) : ControllerBase
 {
 
-    private readonly ReservationServices _service = service;
+    private readonly ReservationService _service = service;
+    private readonly EmailService _mailService = mailService;
 
     [HttpGet]
     public IActionResult GetAll()
@@ -29,9 +30,11 @@ public class ReservationController(ReservationServices service) : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult NewReservation([FromBody] ReservationDto dto)
+    public async Task<IActionResult> NewReservation([FromBody] ReservationDto dto)
     {
-        Task<Reservation> newReservation = _service.Create(dto);
+        Reservation newReservation = await _service.Create(dto);
+
+        await _mailService.MakeConfirmEmail(newReservation);
 
         return Created("", new { reservation = newReservation });
     }
@@ -52,10 +55,15 @@ public class ReservationController(ReservationServices service) : ControllerBase
         return Ok();
     }
 
-    public IActionResult ConfirmReservation(string id)
+    [HttpGet("confirm-reservation/{id}")]
+    public async Task<IActionResult> ConfirmReservation([FromRoute] string id)
     {
-        //TODO
-        return Ok("Confirm");
+        var result = await _service.ConfirmResv(id);
+
+        if (!result)
+            return BadRequest("Reservation invalid or already confirm");
+
+        return Ok("Confirmed");
     }
 
 
