@@ -7,31 +7,42 @@ public class ReservationController : ControllerBase
 {
     public IActionResult GetAll()
     {
-        return Ok("All");
+        ICollection<Reservation> reservations = _service.FindAll();
+
+        return Ok(new { data = reservations });
     }
 
     public IActionResult GetById(int id)
     {
-        return Ok("By id");
+        Reservation reservation = _service.FindById(id);
+
+        return Ok(new { data = reservation });
     }
 
     public IActionResult NewReservation(ReservationDto dto)
     {
-        return Ok("New");
+        Reservation newReservation = _service.Create(dto);
+
+        return Created(new { reservation = newReservation });
     }
 
     public IActionResult UpdateReservation(ReservationDto dto, int id)
     {
-        return Ok("Update");
+        Reservation updatedReservation = _service.Update(id, dto);
+
+        return Created(new { reservation = updatedReservation });
     }
 
     public IActionResult DeleteReservation(int id)
     {
-        return Ok("Delete");
+        _service.Delete(id);
+
+        return Deleted();
     }
 
     public IActionResult ConfirmReservation(int id)
     {
+        //TODO
         return Ok("Confirm");
     }
 
