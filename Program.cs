@@ -20,6 +20,10 @@ builder.Services.AddControllers()
     .AddJsonOptions(options =>
             options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
+builder.Services.AddSingleton(new RedisConfig(
+    builder.Configuration.GetSection("Redis")["ConnectionString"]));
+
+builder.Services.AddSingleton<RedisService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
