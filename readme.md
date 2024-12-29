@@ -67,30 +67,30 @@ Este é um microserviço desenvolvido em **.NET** e **C#** para gerenciar reserv
    git clone https://github.com/seu-repositorio/microservico-reserva.git
    ```
 2.  Navegue até a pasta do projeto:
-```bash
+	```bash
 	cd microservico-reserva
-```
+	```
 3. Execute a aplicação
-```bash
+	```bash
 	dotnet clean
 	dotnet run
-```
+	```
 
 ## 🔧 Configuração do Redis e MongoDB
 
 ### Redis
 
 Certifique-se de que o Redis está em execução na porta padrão (6379). Se estiver utilizando Docker:
-```bash
+	```bash
 	docker run -d --name redis -p 6379:6379 redis
-```
+	```
 
 ### MongoDB
 
 Certifique-se de que o MongoDB está em execução. Utilize o docker-compose.
-```bash
+	```bash
 	docker-compose up
-```
+	```
 
 ## 📝 Licença
 
