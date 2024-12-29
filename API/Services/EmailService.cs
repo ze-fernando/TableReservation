@@ -33,11 +33,12 @@ public class EmailService
         var body = @$"
              <body style='font-family: Arial, sans-serif; line-height: 1.6;'>
                 <p>Obrigado por reservar uma mesa em nosso restaurante. Por favor, confirme a sua reserva clicando no botão abaixo:</p>
-                <a href='localhost:5241/api/confirm-reservation/{resv.Id}'style='display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;'>
+                <div>{resv}</div>
+                <a href='localhost:5241/api/redis/{resv.Id}'style='display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;'>
                     Clique aqui para confirmar o email
                 </a>
                 <p>Se o botão acima não funcionar, copie e cole o link abaixo no seu navegador:</p>
-                <p><a href='localhost:5241/api/confirm-reservation/{resv.Id}'>localhost:5241/api/confirm-reservation/{resv.Id}</a>
+                <p><a href='localhost:5241/api/redis/{resv.Id}'>localhost:5241/api/redis/{resv.Id}</a>
                 </p>
 
                 <p>Atenciosamente,<br>Restaurante tal e tal</p>

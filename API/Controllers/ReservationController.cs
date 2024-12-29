@@ -7,11 +7,13 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api")]
-public class ReservationController(ReservationService service, EmailService mailService) : ControllerBase
+public class ReservationController(ReservationService service,
+        RedisService cache, EmailService mail) : ControllerBase
 {
 
     private readonly ReservationService _service = service;
-    private readonly EmailService _mailService = mailService;
+    private readonly RedisService _cache = cache;
+    private readonly EmailService _mail = mail;
 
     [HttpGet]
     public IActionResult GetAll()
@@ -32,17 +34,29 @@ public class ReservationController(ReservationService service, EmailService mail
     [HttpPost]
     public async Task<IActionResult> NewReservation([FromBody] ReservationDto dto)
     {
-        Reservation newReservation = await _service.Create(dto);
+        var resv = new Reservation
+        {
+            Id = Guid.NewGuid().ToString()[..5],
+            NumberPeople = dto.NumberOfPeople,
+            Date = dto.Date,
+            EmailOfClient = dto.Email,
+            ReservationName = dto.ReservationName,
+        };
 
-        await _mailService.MakeConfirmEmail(newReservation);
+        string key = $"reservation:{resv.Id}";
+        Console.WriteLine(key);
+        TimeSpan expiration = TimeSpan.FromHours(1);
 
-        return Created("", new { reservation = newReservation });
+        await _cache.SetAsync(key, resv, expiration);
+        await _mail.MakeConfirmEmail(resv);
+
+        return Ok("Reserva pendente, clique no link do email para confirmar a reserva");
     }
 
     [HttpPut("{id}")]
-    public IActionResult UpdateReservation([FromBody] ReservationDto dto, [FromRoute] string id)
+    public IActionResult UpdateReservation([FromBody] ReservationDto reservation, [FromRoute] string id)
     {
-        Task<Reservation> updatedReservation = _service.Update(id, dto);
+        Task<Reservation> updatedReservation = _service.Update(id, reservation);
 
         return Ok(new { reservation = updatedReservation });
     }
@@ -54,17 +68,5 @@ public class ReservationController(ReservationService service, EmailService mail
 
         return Ok();
     }
-
-    [HttpGet("confirm-reservation/{id}")]
-    public async Task<IActionResult> ConfirmReservation([FromRoute] string id)
-    {
-        var result = await _service.ConfirmResv(id);
-
-        if (!result)
-            return BadRequest("Reservation invalid or already confirm");
-
-        return Ok("Confirmed");
-    }
-
 
 }

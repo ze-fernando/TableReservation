@@ -14,7 +14,6 @@ public class Reservation
     public required DateTime Date { get; set; }
     public required string ReservationName { get; set; }
     public required string EmailOfClient { get; set; }
-    public required bool IsConfirmed { get; set; }
 
     public override string ToString() =>
         $@"
